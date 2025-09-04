@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Edit(./src/**)",
+      "Write(./src/**)"
+    ],
+    "deny": [
+      "Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)", "Read(./config/credentials.json)",
+      "Edit(./.env)", "Edit(./.env.*)", "Edit(./secrets/**)", "Edit(./config/credentials.json)",
+      "Write(./.env)", "Write(./.env.*)", "Write(./secrets/**)", "Write(./config/credentials.json)",
+
+      "Read(./.git/**)", "Read(./node_modules/**)", "Read(./vendor/**)", "Read(./.wp-env/**)",
+      "Read(./uploads/**)", "Read(./wp-content/cache/**)",
+
+      "Edit(./.git/**)", "Edit(./node_modules/**)", "Edit(./vendor/**)", "Edit(./.wp-env/**)",
+      "Edit(./uploads/**)", "Edit(./wp-content/cache/**)",
+
+      "Write(./.git/**)", "Write(./node_modules/**)", "Write(./vendor/**)", "Write(./.wp-env/**)",
+      "Write(./uploads/**)", "Write(./wp-content/cache/**)",
+
+      "Read(./build/**)", "Edit(./build/**)", "Write(./build/**)"
+    ]
+  }
+}

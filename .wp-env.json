@@ -1,0 +1,18 @@
+{
+  "core": null,
+  "phpVersion": null,
+  "plugins": [],
+  "themes": [
+    "./dist/"
+  ],
+  "port": 8888,
+  "testsPort": 8889,
+  "config": {
+    "WP_DEBUG": true,
+    "IS_DEV": "1",
+    "HMR_PORT": "3000",
+    "HMR_ORIGIN": "http://localhost:3000"
+  },
+  "mappings": {},
+  "mysqlPort": null
+}
