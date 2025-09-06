@@ -1,0 +1,142 @@
+{
+    "key": "group_programs_fields",
+    "title": "プログラム詳細フィールド",
+    "fields": [
+        {
+            "key": "field_degree_type",
+            "label": "学位取得",
+            "name": "degree_type",
+            "type": "select",
+            "instructions": "このプログラムの学位取得について選択してください",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "without": "学位取得を伴わないもの",
+                "with": "学位取得を目指すもの"
+            },
+            "default_value": "without",
+            "allow_null": 0,
+            "multiple": 0,
+            "ui": 0,
+            "return_format": "value",
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_program_layer",
+            "label": "プログラム層",
+            "name": "program_layer",
+            "type": "select",
+            "instructions": "このプログラムの層を選択してください",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "foundation": "基盤層",
+                "core": "中核層",
+                "collaboration": "共創層",
+                "other": "その他"
+            },
+            "default_value": "foundation",
+            "allow_null": 0,
+            "multiple": 0,
+            "ui": 0,
+            "return_format": "value",
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_field_tags",
+            "label": "分野タグ",
+            "name": "field_tags",
+            "type": "checkbox",
+            "instructions": "このプログラムに関連する分野を選択してください（複数選択可）",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "health": "健康科学",
+                "science": "理学",
+                "mathematics": "数学",
+                "engineering": "工学",
+                "medicine": "医学",
+                "economics": "経済学",
+                "law": "法学",
+                "literature": "文学",
+                "education": "教育学",
+                "agriculture": "農学"
+            },
+            "default_value": [],
+            "allow_custom": 1,
+            "save_custom": 1,
+            "toggle": 0,
+            "return_format": "value",
+            "layout": "vertical"
+        },
+        {
+            "key": "field_program_description",
+            "label": "プログラム概要",
+            "name": "program_description",
+            "type": "textarea",
+            "instructions": "プログラムの詳細説明を入力してください",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "maxlength": "",
+            "rows": 4,
+            "new_lines": "wpautop"
+        },
+        {
+            "key": "field_program_url",
+            "label": "プログラムURL",
+            "name": "program_url",
+            "type": "url",
+            "instructions": "プログラムの詳細ページURLを入力してください",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https://example.com"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "programs"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "プログラム投稿タイプ用のカスタムフィールドグループ"
+}

@@ -203,6 +203,174 @@ function kobe_u_scripts() {
 		wp_enqueue_script( 'comment-reply' );
 	}
 }
+
+/**
+ * programsカスタム投稿タイプを登録
+ */
+function register_programs_post_type() {
+	$labels = array(
+		'name'               => 'プログラム',
+		'singular_name'      => 'プログラム',
+		'menu_name'          => 'プログラム',
+		'add_new'            => '新規追加',
+		'add_new_item'       => '新しいプログラムを追加',
+		'edit_item'          => 'プログラムを編集',
+		'new_item'           => '新しいプログラム',
+		'view_item'          => 'プログラムを表示',
+		'search_items'       => 'プログラムを検索',
+		'not_found'          => 'プログラムが見つかりません',
+		'not_found_in_trash' => 'ゴミ箱にプログラムはありません',
+	);
+
+	$args = array(
+		'labels'              => $labels,
+		'public'              => true,
+		'publicly_queryable'  => true,
+		'show_ui'             => true,
+		'show_in_menu'        => true,
+		'show_in_rest'        => true, // REST API対応
+		'rest_base'           => 'programs',
+		'query_var'           => true,
+		'rewrite'             => array( 'slug' => 'programs' ),
+		'capability_type'     => 'post',
+		'has_archive'         => true,
+		'hierarchical'        => false,
+		'menu_position'       => 5,
+		'menu_icon'           => 'dashicons-welcome-learn-more',
+		'supports'            => array( 'title', 'thumbnail', 'excerpt', 'custom-fields' ),
+	);
+
+	register_post_type( 'programs', $args );
+}
+add_action( 'init', 'register_programs_post_type' );
+
+/**
+ * ACF Local JSON保存場所を指定
+ */
+function my_acf_json_save_point( $path ) {
+	return get_stylesheet_directory() . '/acf-json';
+}
+add_filter( 'acf/settings/save_json', 'my_acf_json_save_point' );
+
+/**
+ * ACF Local JSON読み込み場所を指定
+ */
+function my_acf_json_load_point( $paths ) {
+	unset( $paths[0] );
+	$paths[] = get_stylesheet_directory() . '/acf-json';
+	return $paths;
+}
+
+/**
+ * REST APIでプログラムのカスタムフィールドを公開
+ */
+function add_programs_custom_fields_to_api() {
+	// 学位取得フィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'degree_type',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'degree_type', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'degree_type', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => '学位取得タイプ',
+				'type'        => 'string',
+				'enum'        => array( 'with', 'without' ),
+			),
+		)
+	);
+
+	// プログラム層フィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'program_layer',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'program_layer', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'program_layer', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => 'プログラム層',
+				'type'        => 'string',
+				'enum'        => array( 'foundation', 'core', 'collaboration', 'other' ),
+			),
+		)
+	);
+
+	// 分野タグフィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'field_tags',
+		array(
+			'get_callback' => function( $post ) {
+				$tags = get_field( 'field_tags', $post['id'] );
+				return is_array( $tags ) ? $tags : array();
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'field_tags', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => '分野タグ',
+				'type'        => 'array',
+				'items'       => array( 'type' => 'string' ),
+			),
+		)
+	);
+
+	// プログラム概要フィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'program_description',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'program_description', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'program_description', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => 'プログラム概要',
+				'type'        => 'string',
+			),
+		)
+	);
+
+	// プログラムURLフィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'program_url',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'program_url', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'program_url', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => 'プログラムURL',
+				'type'        => 'string',
+				'format'      => 'uri',
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'add_programs_custom_fields_to_api' );
+add_filter( 'acf/settings/load_json', 'my_acf_json_load_point' );
+
+/**
+ * プログラム検索用ショートコード
+ */
+function program_search_shortcode() {
+	return '<div id="program-search"></div>';
+}
+add_shortcode( 'program_search', 'program_search_shortcode' );
+
 add_action( 'wp_enqueue_scripts', 'kobe_u_scripts' );
 
 /**

@@ -1,4 +1,7 @@
 import '../style.scss';
+import { render, h } from 'preact';
+import { ProgramSearch } from '../components/ProgramSearch.tsx';
+import $ from 'jquery';
 
 // ハンバーガーメニュー
 $(function () {
@@ -44,11 +47,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const isOpen = this.open;
 
             if (isOpen) {
-                if (arrowImg) arrowImg.src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow_after.png";
-                if (arrow2Img) arrow2Img.src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow2_after.png";
+                if (arrowImg) (arrowImg as HTMLImageElement).src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow_after.png";
+                if (arrow2Img) (arrow2Img as HTMLImageElement).src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow2_after.png";
             } else {
-                if (arrowImg) arrowImg.src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow.png";
-                if (arrow2Img) arrow2Img.src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow2.png";
+                if (arrowImg) (arrowImg as HTMLImageElement).src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow.png";
+                if (arrow2Img) (arrow2Img as HTMLImageElement).src = "/ofpre-recurrent/wp-content/themes/kobe-u/assets/images/top/arrow2.png";
             }
         });
     });
@@ -59,8 +62,11 @@ $(function () {
     var headerHight = 80; //ヘッダーの高さ
     $('a[href^="#"]').click(function () {
         var href = $(this).attr("href");
+        if (!href) return false;
         var target = $(href == "#" || href == "" ? "html" : href);
-        var position = target.offset().top - headerHight;
+        var offset = target.offset();
+        if (!offset) return false;
+        var position = offset.top - headerHight;
         $("html, body").animate({
             scrollTop: position
         }, 50, "swing");
@@ -71,7 +77,7 @@ $(function () {
 // 吹き出し
 
 // 要素がビューポート内にあるかを確認する関数
-function isInViewport(element) {
+function isInViewport(element: Element) {
     const rect = element.getBoundingClientRect();
     return (
         rect.top >= 0 &&
@@ -99,3 +105,11 @@ window.addEventListener('scroll', handleScroll);
 
 // ページ読み込み時に初期チェックを実行
 handleScroll();
+
+// プログラム検索コンポーネントのマウント
+document.addEventListener('DOMContentLoaded', () => {
+    const programSearchElement = document.getElementById('program-search');
+    if (programSearchElement) {
+        render(h(ProgramSearch, {}), programSearchElement);
+    }
+});
