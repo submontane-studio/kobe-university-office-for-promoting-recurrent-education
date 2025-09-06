@@ -19,6 +19,13 @@ interface Program {
   };
 }
 
+// スラッグから日本語ラベルへのマッピング
+const FIELD_LABEL_MAP: { [key: string]: string } = {
+  'health': '健康科学',
+  'mathematics': '数理・データサイエンス',
+  'science': '理工学',
+};
+
 export function ProgramSearch() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [filteredPrograms, setFilteredPrograms] = useState<Program[]>([]);
@@ -52,12 +59,14 @@ export function ProgramSearch() {
       setPrograms(data);
       
       // 利用可能な分野を抽出（スラッグとラベルのペア）
+
+      
       const fieldMap = new Map<string, string>();
       data.forEach((program: Program) => {
         if (program.field_tags) {
           program.field_tags.forEach((tag, index) => {
             // field_labelsが存在する場合はそれを使用、なければタグをそのままラベルとして使用
-            const label = program.field_labels?.[index] || tag;
+            const label = program.field_labels?.[index] || FIELD_LABEL_MAP[tag] || tag;
             fieldMap.set(tag, label);
           });
         }
@@ -97,49 +106,63 @@ export function ProgramSearch() {
     setFilteredPrograms(filtered);
   };
 
+  // 検索ボタンクリック時の処理
+  const handleSearch = () => {
+    filterPrograms();
+  };
+
   // 初期データの読み込み
   useEffect(() => {
     fetchPrograms();
   }, []);
 
-  // プログラムデータまたはフィルター条件が変更された時にフィルター実行
+  // 初回データ読み込み時のみフィルタリング
   useEffect(() => {
-    filterPrograms();
-  }, [programs, selectedLayer, selectedDegreeType, selectedField]);
+    if (programs.length > 0) {
+      filterPrograms();
+    }
+  }, [programs]);
 
   return (
     <div className="c-program-search">
+      <h3 className="c-program-search__title">検索する</h3>
       {/* フィルター部分 */}
       <div className="c-program-search__filters">
-        {/* プログラム層フィルター */}
-        <div className="c-program-search__filter-group">
-          <label htmlFor="layer-select" className="c-program-search__filter-label">プログラム層</label>
-          <select 
-            id="layer-select"
-            className="c-select"
-            value={selectedLayer}
-            onChange={(e) => setSelectedLayer((e.target as HTMLSelectElement).value)}
-          >
-            <option value="all">すべて</option>
-            <option value="foundation">基盤</option>
-            <option value="core">コア</option>
-            <option value="collaboration">連携</option>
-          </select>
-        </div>
-
         {/* 学位取得フィルター */}
         <div className="c-program-search__filter-group">
           <label htmlFor="degree-select" className="c-program-search__filter-label">学位取得</label>
-          <select 
-            id="degree-select"
-            className="c-select"
-            value={selectedDegreeType}
-            onChange={(e) => setSelectedDegreeType((e.target as HTMLSelectElement).value)}
-          >
-            <option value="all">すべて</option>
-            <option value="with">あり</option>
-            <option value="without">なし</option>
-          </select>
+          <div className="c-select-wrapper">
+            <span className="c-select-icon"></span>
+            <select 
+              id="degree-select"
+              className="c-select"
+              value={selectedDegreeType}
+              onChange={(e) => setSelectedDegreeType((e.target as HTMLSelectElement).value)}
+            >
+              <option value="all">すべて</option>
+              <option value="with">あり</option>
+              <option value="without">なし</option>
+            </select>
+          </div>
+        </div>
+
+        {/* プログラム層フィルター */}
+        <div className="c-program-search__filter-group">
+          <label htmlFor="layer-select" className="c-program-search__filter-label">プログラム層</label>
+          <div className="c-select-wrapper">
+            <span className="c-select-icon"></span>
+            <select 
+              id="layer-select"
+              className="c-select"
+              value={selectedLayer}
+              onChange={(e) => setSelectedLayer((e.target as HTMLSelectElement).value)}
+            >
+              <option value="all">すべて</option>
+              <option value="foundation">基盤</option>
+              <option value="core">コア</option>
+              <option value="collaboration">連携</option>
+            </select>
+          </div>
         </div>
 
         {/* 分野フィルター */}
@@ -176,6 +199,23 @@ export function ProgramSearch() {
             </fieldset>
           </div>
         )}
+
+        {/* 検索ボタン */}
+        <div className="c-program-search__filter-group">
+          <button 
+            type="button"
+            className="c-search-button"
+            onClick={handleSearch}
+          >
+            検索する
+          </button>
+        </div>
+      </div>
+
+      {/* 検索結果見出し */}
+      <div className="c-program-search__result-header">
+        <h3 className="c-program-search__result-title">検索結果</h3>
+        <span className="c-program-search__result-count">{filteredPrograms.length}件</span>
       </div>
 
       {loading && (
@@ -197,59 +237,137 @@ export function ProgramSearch() {
           </div>
         )}
 
-        {filteredPrograms.map((program) => (
-          <article key={program.id} className="c-program-card">
-            <div className="c-program-card__content">
-              <h3 className="c-program-card__title">
-                {program.title.rendered}
-              </h3>
-              
-              {program.program_description && (
-                <div 
-                  className="c-program-card__description"
-                  dangerouslySetInnerHTML={{ __html: program.program_description }}
-                />
-              )}
-              
-              <div className="c-program-card__meta">
-                {program.degree_type && (
-                  <span className={`c-badge c-badge--${program.degree_type}`}>
-                    {program.degree_type === 'with' ? '学位取得あり' : '学位取得なし'}
-                  </span>
-                )}
-                
-                {program.program_layer && (
-                  <span className={`c-badge c-badge--${program.program_layer}`}>
-                    {program.program_layer === 'foundation' ? '基盤' : 
-                     program.program_layer === 'core' ? 'コア' :
-                     program.program_layer === 'collaboration' ? '連携' : 'その他'}
-                  </span>
-                )}
-              </div>
-              
-              {program.field_tags && program.field_tags.length > 0 && (
-                <div className="c-program-card__tags">
-                  {program.field_tags.map((tag, index) => (
-                    <span key={index} className="c-tag">
-                      {program.field_labels?.[index] || tag}
-                    </span>
-                  ))}
+        {(() => {
+          // 学位取得の有無でプログラムをグループ化
+          const withDegree = filteredPrograms.filter(program => program.degree_type === 'with');
+          const withoutDegree = filteredPrograms.filter(program => program.degree_type === 'without');
+          
+          return (
+            <>
+              {withDegree.length > 0 && (
+                <div className="c-program-group">
+                  <h4 className="c-program-group__title">学位取得を伴うもの</h4>
+                  <div className="c-program-group__items">
+                    {withDegree.map((program) => (
+                      <article key={program.id} className="c-program-card">
+                        <div className="c-program-card__content">
+                          <h3 className="c-program-card__title">
+                            {program.title.rendered}
+                          </h3>
+                          
+                          {program.program_description && (
+                            <div 
+                              className="c-program-card__description"
+                              dangerouslySetInnerHTML={{ __html: program.program_description }}
+                            />
+                          )}
+                          
+                          <div className="c-program-card__meta">
+                            {program.degree_type && (
+                              <span className={`c-badge c-badge--${program.degree_type}`}>
+                                {program.degree_type === 'with' ? '学位取得あり' : '学位取得なし'}
+                              </span>
+                            )}
+                            
+                            {program.program_layer && (
+                              <span className={`c-badge c-badge--${program.program_layer}`}>
+                                {program.program_layer === 'foundation' ? '基盤' : 
+                                 program.program_layer === 'core' ? 'コア' :
+                                 program.program_layer === 'collaboration' ? '連携' : 'その他'}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {program.field_tags && program.field_tags.length > 0 && (
+                            <div className="c-program-card__tags">
+                              {program.field_tags.map((tag, index) => (
+                                <span key={index} className="c-tag">
+                                  {program.field_labels?.[index] || FIELD_LABEL_MAP[tag] || tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {program.program_url && (
+                            <a 
+                              href={program.program_url}
+                              className="c-program-card__link"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              詳細を見る
+                            </a>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
                 </div>
               )}
-              
-              {program.program_url && (
-                <a 
-                  href={program.program_url}
-                  className="c-program-card__link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  詳細を見る
-                </a>
+
+              {withoutDegree.length > 0 && (
+                <div className="c-program-group">
+                  <h4 className="c-program-group__title">学位取得を伴わないもの</h4>
+                  <div className="c-program-group__items">
+                    {withoutDegree.map((program) => (
+                      <article key={program.id} className="c-program-card">
+                        <div className="c-program-card__content">
+                          <h3 className="c-program-card__title">
+                            {program.title.rendered}
+                          </h3>
+                          
+                          {program.program_description && (
+                            <div 
+                              className="c-program-card__description"
+                              dangerouslySetInnerHTML={{ __html: program.program_description }}
+                            />
+                          )}
+                          
+                          <div className="c-program-card__meta">
+                            {program.degree_type && (
+                              <span className={`c-badge c-badge--${program.degree_type}`}>
+                                {program.degree_type === 'with' ? '学位取得あり' : '学位取得なし'}
+                              </span>
+                            )}
+                            
+                            {program.program_layer && (
+                              <span className={`c-badge c-badge--${program.program_layer}`}>
+                                {program.program_layer === 'foundation' ? '基盤' : 
+                                 program.program_layer === 'core' ? 'コア' :
+                                 program.program_layer === 'collaboration' ? '連携' : 'その他'}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {program.field_tags && program.field_tags.length > 0 && (
+                            <div className="c-program-card__tags">
+                              {program.field_tags.map((tag, index) => (
+                                <span key={index} className="c-tag">
+                                  {program.field_labels?.[index] || FIELD_LABEL_MAP[tag] || tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {program.program_url && (
+                            <a 
+                              href={program.program_url}
+                              className="c-program-card__link"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              詳細を見る
+                            </a>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
               )}
-            </div>
-          </article>
-        ))}
+            </>
+          );
+        })()}
       </div>
     </div>
   );

@@ -1,1 +1,253 @@
-// プログラム検索のスタイルは削除されました
+// プログラム検索全体のコンテナ
+.c-program-search {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// 検索タイトルのスタイル打ち消し
+.c-program-search__title {
+  all: unset;
+  display: block;
+  margin: 0 0 10px 0;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+// プログラム検索フィルター部分（search.png参考）
+.c-program-search__filters {
+  background: #f5f5f5;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.c-program-search__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// 学位取得とプログラム層は上揃え
+.c-program-search__filter-group:not(:last-child) {
+  align-self: flex-start;
+}
+
+.c-program-card__content {
+  h3 {
+    // 既存のh3スタイルを打ち消し
+    all: unset;
+
+    // 最低限のスタイルを再適用
+    display: block;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// 学位取得select要素のラッパー（selectUI-1.pngを参考）
+.c-select-wrapper {
+  position: relative;
+  display: inline-block;
+
+  // 左側のアイコン
+  .c-select-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    background: white;
+    border: 1px solid #cdcdcd;
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+
+    // 内側の赤い丸
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 21px;
+      height: 21px;
+      background: #e60012;
+      border-radius: 50%;
+    }
+  }
+
+  // 右側の赤い矢印
+  &::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-60%) rotate(40deg) skew(-5deg, 0);
+    width: 14px;
+    height: 14px;
+    border-right: 4px solid #e60012;
+    border-bottom: 4px solid #e60012;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  select {
+    width: 240px;
+    height: 58px; // 高さは58pxを維持
+    padding: 14px 40px 14px 70px; // 上下パディングを調整
+    background: white;
+    border: 2px solid #141414;
+    border-radius: 4px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #141414;
+    cursor: pointer;
+    line-height: 1.0; // line-heightを調整
+
+    // デフォルトの矢印を非表示
+    appearance: none;
+
+    &:hover {
+      border-color: #e60012;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #e60012;
+    }
+  }
+}
+
+// 分野のラジオボタンスタイリング（search-tag.png/search-tag-over.png参考）
+.c-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+
+  &__item {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+  }
+
+  &__input {
+    // ラジオボタンを完全に隠す
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: white;
+    border: 2px solid #141414;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #141414;
+    box-shadow: 2px 4px 0px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    padding-left: 32px; // #マーク分の余白
+
+    // #マークアイコン
+    &::before {
+      content: '#';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: bold;
+      color: #c40000;
+    }
+
+    &:hover {
+      background: #fff5f5;
+    }
+  }
+
+  // 選択状態のスタイル（search-tag-over.png参考）
+  &__input:checked + &__label {
+    background: #e60012;
+    border-color: #e60012;
+    color: white;
+    box-shadow: none;
+    
+    // 選択時の#マークも白色に
+    &::before {
+      color: white;
+    }
+  }
+}
+
+// 検索ボタンスタイリング（button.png参考）
+.c-search-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  width: 262px;
+  height: 80px;
+  background: #141414;
+  border: none;
+  border-radius: 6px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  padding-left: 48px; // アイコン分の左パディングを増加
+
+  // 検索アイコン（SVG）
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50px;
+    width: 37px;
+    height: 37px;
+    background-image: url("../assets/images/top/icon-search.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  &:hover {
+    background: #333333;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// 検索結果ヘッダー
+.c-program-search__result-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.c-program-search__result-title {
+  all: unset;
+  display: block;
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.c-program-search__result-count {
+  font-size: 20px;
+  font-weight: bold;
+}
