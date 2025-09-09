@@ -28,6 +28,33 @@
             "placeholder": ""
         },
         {
+            "key": "field_program_type",
+            "label": "プログラムタイプ",
+            "name": "program_type",
+            "type": "select",
+            "instructions": "このプログラムのタイプを選択してください（学位取得に連動します）",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "interdisciplinary": "異分野共創・価値創造・リカレント教育プログラム",
+                "other_recurrent": "その他のリカレント・リスキリング特別プログラム",
+                "professional": "専門職大学院",
+                "special": "社会人向け特別プログラム"
+            },
+            "default_value": "interdisciplinary",
+            "allow_null": 0,
+            "multiple": 0,
+            "ui": 0,
+            "return_format": "value",
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
             "key": "field_program_layer",
             "label": "プログラム層",
             "name": "program_layer",

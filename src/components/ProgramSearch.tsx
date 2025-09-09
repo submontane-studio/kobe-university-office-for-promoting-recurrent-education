@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 
 interface Program {
@@ -8,6 +7,7 @@ interface Program {
   program_description?: string;
   program_url?: string;
   degree_type?: string;
+  program_type?: string;
   program_layer?: string;
   field_tags?: string[];
   field_labels?: string[];
@@ -26,47 +26,38 @@ const FIELD_LABEL_MAP: { [key: string]: string } = {
   'science': '理工学',
 };
 
+// プログラムタイプから日本語ラベルへのマッピング
+const PROGRAM_TYPE_LABEL_MAP: { [key: string]: string } = {
+  'interdisciplinary': '異分野共創・価値創造・リカレント教育プログラム',
+  'other_recurrent': 'その他のリカレント・リスキリング特別プログラム',
+  'professional': '専門職大学院',
+  'special': '社会人向け特別プログラム'
+};
+
 export function ProgramSearch() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [filteredPrograms, setFilteredPrograms] = useState<Program[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [selectedLayer, setSelectedLayer] = useState<string>('all');
   const [selectedDegreeType, setSelectedDegreeType] = useState<string>('all');
   const [selectedField, setSelectedField] = useState<string>('all');
   const [availableFields, setAvailableFields] = useState<{slug: string, label: string}[]>([]);
 
-  // WordPressのREST APIエンドポイント
-  const apiEndpoint = '/wp-json/wp/v2/programs';
-
-  // プログラムデータの取得
-  const fetchPrograms = async () => {
-    setLoading(true);
-    setError(null);
-
+  // WordPressから渡されたデータを取得
+  const loadProgramsData = () => {
     try {
-      const params = new URLSearchParams({
-        per_page: '20',
-        _embed: '1'
-      });
-
-      const response = await fetch(`${apiEndpoint}?${params}`);
-      if (!response.ok) {
-        throw new Error('プログラムの取得に失敗しました');
-      }
-
-      const data = await response.json();
-      setPrograms(data);
+      // window.programsDataからデータを取得
+      const programsData = (window as any).programsData || [];
+      const fieldLabelsMap = (window as any).fieldLabelsMap || {};
+      
+      setPrograms(programsData);
       
       // 利用可能な分野を抽出（スラッグとラベルのペア）
-
-      
       const fieldMap = new Map<string, string>();
-      data.forEach((program: Program) => {
+      programsData.forEach((program: Program) => {
         if (program.field_tags) {
           program.field_tags.forEach((tag, index) => {
-            // field_labelsが存在する場合はそれを使用、なければタグをそのままラベルとして使用
-            const label = program.field_labels?.[index] || FIELD_LABEL_MAP[tag] || tag;
+            // field_labelsが存在する場合はそれを使用、なければマッピングまたはタグをそのままラベルとして使用
+            const label = program.field_labels?.[index] || fieldLabelsMap[tag] || FIELD_LABEL_MAP[tag] || tag;
             fieldMap.set(tag, label);
           });
         }
@@ -79,9 +70,7 @@ export function ProgramSearch() {
       
       setAvailableFields(fields);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました');
-    } finally {
-      setLoading(false);
+      console.error('プログラムデータの読み込みに失敗しました:', err);
     }
   };
 
@@ -109,24 +98,42 @@ export function ProgramSearch() {
   // 検索ボタンクリック時の処理
   const handleSearch = () => {
     filterPrograms();
+    
+    // 初期表示を隠してフィルタリング結果を表示
+    const initialDisplay = document.getElementById('programs-initial-display');
+    const filteredResults = document.getElementById('filtered-results');
+    
+    if (initialDisplay) {
+      initialDisplay.style.display = 'none';
+    }
+    if (filteredResults) {
+      filteredResults.style.display = 'block';
+    }
   };
 
   // 初期データの読み込み
   useEffect(() => {
-    fetchPrograms();
+    loadProgramsData();
   }, []);
 
-  // 初回データ読み込み時のみフィルタリング
+  // 初回データ読み込み時のみフィルタリングと表示
   useEffect(() => {
     if (programs.length > 0) {
       filterPrograms();
+      // 初期表示として filtered-results を表示
+      const filteredResults = document.getElementById('filtered-results');
+      if (filteredResults) {
+        filteredResults.style.display = 'block';
+      }
     }
   }, [programs]);
 
   return (
-    <div className="c-program-search">
-      <h3 className="c-program-search__title">検索する</h3>
-      {/* フィルター部分 */}
+    <div className="c-program-search-filters-only">
+      {/* タイトル */}
+      <h2 className="c-program-search__title">検索する</h2>
+      
+      {/* フィルター部分のみ */}
       <div className="c-program-search__filters">
         {/* 学位取得フィルター */}
         <div className="c-program-search__filter-group">
@@ -212,162 +219,135 @@ export function ProgramSearch() {
         </div>
       </div>
 
-      {/* 検索結果見出し */}
-      <div className="c-program-search__result-header">
-        <h3 className="c-program-search__result-title">検索結果</h3>
-        <span className="c-program-search__result-count">{filteredPrograms.length}件</span>
-      </div>
-
-      {loading && (
-        <div className="c-program-search__loading">
-          読み込み中...
-        </div>
-      )}
-
-      {error && (
-        <div className="c-program-search__error">
-          {error}
-        </div>
-      )}
-
-      <div className="c-program-search__results">
-        {filteredPrograms.length === 0 && !loading && !error && (
-          <div className="c-program-search__no-results">
-            該当するプログラムが見つかりませんでした。
+      {/* フィルタリング後の結果を表示 */}
+      <div id="filtered-results" style={{ display: 'none' }}>
+        <div className="c-program-search">
+          {/* 検索結果ヘッダー */}
+          <div className="c-program-search__result-header">
+            <h2 className="c-program-search__result-title">検索結果</h2>
+            <span className="c-program-search__result-count">{filteredPrograms.length}件</span>
           </div>
-        )}
-
-        {(() => {
-          // 学位取得の有無でプログラムをグループ化
-          const withDegree = filteredPrograms.filter(program => program.degree_type === 'with');
-          const withoutDegree = filteredPrograms.filter(program => program.degree_type === 'without');
           
-          return (
-            <>
-              {withDegree.length > 0 && (
-                <div className="c-program-group">
-                  <h4 className="c-program-group__title">学位取得を伴うもの</h4>
-                  <div className="c-program-group__items">
-                    {withDegree.map((program) => (
-                      <article key={program.id} className="c-program-card">
-                        <div className="c-program-card__content">
-                          <h3 className="c-program-card__title">
-                            {program.title.rendered}
-                          </h3>
-                          
-                          {program.program_description && (
-                            <div 
-                              className="c-program-card__description"
-                              dangerouslySetInnerHTML={{ __html: program.program_description }}
-                            />
-                          )}
-                          
-                          <div className="c-program-card__meta">
-                            {program.degree_type && (
-                              <span className={`c-badge c-badge--${program.degree_type}`}>
-                                {program.degree_type === 'with' ? '学位取得あり' : '学位取得なし'}
-                              </span>
-                            )}
-                            
-                            {program.program_layer && (
-                              <span className={`c-badge c-badge--${program.program_layer}`}>
-                                {program.program_layer === 'foundation' ? '基盤' : 
-                                 program.program_layer === 'core' ? 'コア' :
-                                 program.program_layer === 'collaboration' ? '連携' : 'その他'}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {program.field_tags && program.field_tags.length > 0 && (
-                            <div className="c-program-card__tags">
-                              {program.field_tags.map((tag, index) => (
-                                <span key={index} className="c-tag">
-                                  {program.field_labels?.[index] || FIELD_LABEL_MAP[tag] || tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          
-                          {program.program_url && (
-                            <a 
-                              href={program.program_url}
-                              className="c-program-card__link"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              詳細を見る
-                            </a>
-                          )}
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              )}
+          <div className="c-program-search__results">
+            {filteredPrograms.length === 0 ? (
+              <div className="c-program-search__no-results">
+                該当するプログラムが見つかりませんでした。
+              </div>
+            ) : (
+              (() => {
+                // 学位取得の有無とプログラムタイプでプログラムをグループ化
+                const withDegree = filteredPrograms.filter(program => program.degree_type === 'with');
+                const withoutDegree = filteredPrograms.filter(program => program.degree_type === 'without');
+                
+                // プログラムタイプでグループ化する関数
+                const groupByProgramType = (programs: Program[]) => {
+                  const groups: { [key: string]: Program[] } = {};
+                  programs.forEach(program => {
+                    const type = program.program_type || 'unknown';
+                    if (!groups[type]) {
+                      groups[type] = [];
+                    }
+                    groups[type].push(program);
+                  });
+                  return groups;
+                };
 
-              {withoutDegree.length > 0 && (
-                <div className="c-program-group">
-                  <h4 className="c-program-group__title">学位取得を伴わないもの</h4>
-                  <div className="c-program-group__items">
-                    {withoutDegree.map((program) => (
-                      <article key={program.id} className="c-program-card">
-                        <div className="c-program-card__content">
-                          <h3 className="c-program-card__title">
-                            {program.title.rendered}
-                          </h3>
-                          
-                          {program.program_description && (
-                            <div 
-                              className="c-program-card__description"
-                              dangerouslySetInnerHTML={{ __html: program.program_description }}
-                            />
-                          )}
-                          
-                          <div className="c-program-card__meta">
-                            {program.degree_type && (
-                              <span className={`c-badge c-badge--${program.degree_type}`}>
-                                {program.degree_type === 'with' ? '学位取得あり' : '学位取得なし'}
-                              </span>
-                            )}
-                            
-                            {program.program_layer && (
-                              <span className={`c-badge c-badge--${program.program_layer}`}>
-                                {program.program_layer === 'foundation' ? '基盤' : 
-                                 program.program_layer === 'core' ? 'コア' :
-                                 program.program_layer === 'collaboration' ? '連携' : 'その他'}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {program.field_tags && program.field_tags.length > 0 && (
-                            <div className="c-program-card__tags">
-                              {program.field_tags.map((tag, index) => (
-                                <span key={index} className="c-tag">
-                                  {program.field_labels?.[index] || FIELD_LABEL_MAP[tag] || tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          
-                          {program.program_url && (
-                            <a 
-                              href={program.program_url}
-                              className="c-program-card__link"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              詳細を見る
-                            </a>
-                          )}
+                // カードコンポーネント
+                const renderProgramCard = (program: Program) => (
+                  <a 
+                    key={program.id} 
+                    href={program.program_url || '#'} 
+                    className="c-program-card"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    {/* 1. ヘッダー（タグ） */}
+                    <div className="c-program-card__header">
+                      <span className="c-program-card__category">
+                        {program.field_tags && program.field_tags.length > 0 
+                          ? (program.field_labels?.[0] || (program.field_tags[0] && FIELD_LABEL_MAP[program.field_tags[0]]) || program.field_tags[0])
+                          : '人文学'
+                        }
+                      </span>
+                    </div>
+
+                    {/* 2. タイトル */}
+                    <div className="c-program-card__title">
+                      <h5>
+                        {program.title.rendered}
+                      </h5>
+                    </div>
+
+                    {/* 3. 画像 */}
+                    <div className="c-program-card__image">
+                      <img 
+                        src={
+                          program._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
+                          '/wp-content/themes/kobe-u/assets/images/noimage.png'
+                        }
+                        alt={
+                          program._embedded?.['wp:featuredmedia']?.[0]?.alt_text ||
+                          'プログラム画像'
+                        }
+                        loading="lazy"
+                      />
+                    </div>
+
+                    {/* 4. フッター（募集期間） */}
+                    <div className={`c-program-card__footer ${program.program_url && program.program_url.includes('vimeo') ? 'c-program-card__footer--video' : ''}`}>
+                      <span>応募期間：2025/9/20〜2026/1/2</span>
+                    </div>
+                  </a>
+                );
+
+                return (
+                  <>
+                    {withDegree.length > 0 && (
+                      <div className="c-program-group">
+                        <div className="c-program-group__title-wrapper">
+                          <h3 className="c-program-group__title">学位取得を目指すもの</h3>
                         </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          );
-        })()}
+                        {(() => {
+                          const typeGroups = groupByProgramType(withDegree);
+                          return Object.entries(typeGroups).map(([typeKey, programs]) => (
+                            <div key={typeKey} className="c-program-type-group">
+                              <h4 className="c-program-type-group__title">
+                                {PROGRAM_TYPE_LABEL_MAP[typeKey] || typeKey}
+                              </h4>
+                              <div className="c-programs-grid">
+                                {programs.map(renderProgramCard)}
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    )}
+
+                    {withoutDegree.length > 0 && (
+                      <div className="c-program-group">
+                        <div className="c-program-group__title-wrapper">
+                          <h3 className="c-program-group__title">学位取得を伴わないもの</h3>
+                        </div>
+                        {(() => {
+                          const typeGroups = groupByProgramType(withoutDegree);
+                          return Object.entries(typeGroups).map(([typeKey, programs]) => (
+                            <div key={typeKey} className="c-program-type-group">
+                              <h4 className="c-program-type-group__title">
+                                {PROGRAM_TYPE_LABEL_MAP[typeKey] || typeKey}
+                              </h4>
+                              <div className="c-programs-grid">
+                                {programs.map(renderProgramCard)}
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    )}
+                  </>
+                );
+              })()
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

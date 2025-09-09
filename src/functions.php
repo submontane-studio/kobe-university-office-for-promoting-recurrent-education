@@ -359,17 +359,262 @@ function add_programs_custom_fields_to_api() {
 			),
 		)
 	);
+
+	// プログラムタイプフィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'program_type',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'program_type', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'program_type', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => 'プログラムタイプ',
+				'type'        => 'string',
+				'enum'        => array( 'interdisciplinary', 'other_recurrent', 'professional', 'special' ),
+			),
+		)
+	);
 }
 add_action( 'rest_api_init', 'add_programs_custom_fields_to_api' );
 add_filter( 'acf/settings/load_json', 'my_acf_json_load_point' );
 
 /**
- * プログラム検索用ショートコード
+ * プログラム検索用ショートコード（メインループ版）
  */
 function program_search_shortcode() {
-	return '<div id="program-search"></div>';
+	try {
+		ob_start();
+		
+		// エラーハンドリングのテスト
+		if (!function_exists('get_post_types')) {
+			throw new Exception('WordPress関数が利用できません');
+		}
+	
+	// プログラムデータをクエリ
+	$programs_query = new WP_Query([
+		'post_type' => 'programs',
+		'posts_per_page' => -1,
+		'post_status' => 'publish',
+		'orderby' => 'date',
+		'order' => 'DESC'
+	]);
+	
+
+	
+	$programs_data = [];
+	$field_labels = [];
+	
+	if ($programs_query->have_posts()) {
+		while ($programs_query->have_posts()) {
+			$programs_query->the_post();
+			$post_id = get_the_ID();
+			
+			// ACFフィールドから分野データを取得
+			$field_tags = get_field('field_tags', $post_id);
+			$field_objects = [];
+			if (is_array($field_tags)) {
+				foreach ($field_tags as $field_value) {
+					if (is_array($field_value) && isset($field_value['value']) && isset($field_value['label'])) {
+						// 新形式（両方配列）
+						$field_objects[] = $field_value;
+						$field_labels[$field_value['value']] = $field_value['label'];
+					} else {
+						// 旧形式対応（値のみ）
+						$field_objects[] = ['value' => $field_value, 'label' => $field_value];
+						$field_labels[$field_value] = $field_value;
+					}
+				}
+			}
+			
+			$program_data = [
+				'id' => $post_id,
+				'title' => ['rendered' => get_the_title()],
+				'excerpt' => ['rendered' => get_the_excerpt()],
+				'program_description' => get_field('program_description', $post_id),
+				'program_url' => get_field('program_url', $post_id),
+				'degree_type' => get_field('degree_type', $post_id),
+				'program_type' => get_field('program_type', $post_id),
+				'program_layer' => get_field('program_layer', $post_id),
+				'field_tags' => array_column($field_objects, 'value'),
+				'field_labels' => array_column($field_objects, 'label'),
+			];
+			
+			// アイキャッチ画像（ダミー画像対応）
+			$dummy_image_url = get_template_directory_uri() . '/assets/images/noimage.png';
+			
+			// デフォルトはダミー画像
+			$program_data['_embedded'] = [
+				'wp:featuredmedia' => [[
+					'source_url' => $dummy_image_url,
+					'alt_text' => 'プログラム画像'
+				]]
+			];
+			
+			// アイキャッチがある場合は実際の画像を使用
+			if (has_post_thumbnail()) {
+				$thumbnail_id = get_post_thumbnail_id();
+				$program_data['_embedded'] = [
+					'wp:featuredmedia' => [[
+						'source_url' => get_the_post_thumbnail_url($post_id, 'full'),
+						'alt_text' => get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true) ?: 'プログラム画像'
+					]]
+				];
+			}
+			
+			$programs_data[] = $program_data;
+		}
+		wp_reset_postdata();
+	}
+	
+	// JavaScriptで使用するデータを出力
+	?>
+	<script type="text/javascript">
+		window.programsData = <?php echo json_encode($programs_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+		window.fieldLabelsMap = <?php echo json_encode($field_labels, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+	</script>
+	
+	<!-- 検索UI -->
+	<div id="program-search"></div>
+	
+	<!-- 初期プログラム表示 -->
+	<div id="programs-initial-display">
+		<div class="c-program-search">
+			<!-- 検索結果ヘッダー -->
+			<div class="c-program-search__result-header">
+				<h3 class="c-program-search__result-title">検索結果</h3>
+				<span class="c-program-search__result-count"><?php echo count($programs_data); ?>件</span>
+			</div>
+			
+			<div class="c-program-search__results">
+				<?php
+				// 学位取得別にグループ化
+				$with_degree = array_filter($programs_data, function($p) { return $p['degree_type'] === 'with'; });
+				$without_degree = array_filter($programs_data, function($p) { return $p['degree_type'] === 'without'; });
+				
+				if (!empty($with_degree)): ?>
+					<div class="c-program-group">
+						<h4 class="c-program-group__title">学位取得を伴うもの</h4>
+						<div class="c-program-group__items">
+							<?php foreach ($with_degree as $program): ?>
+								<?php ?>
+								<?php echo render_program_card($program, $field_labels); ?>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				<?php endif;
+				
+				if (!empty($without_degree)): ?>
+					<div class="c-program-group">
+						<h4 class="c-program-group__title">学位取得を伴わないもの</h4>
+						<div class="c-program-group__items">
+							<?php foreach ($without_degree as $program): ?>
+								<?php ?>
+								<?php echo render_program_card($program, $field_labels); ?>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
+		</div>
+	</div>
+	
+	<?php		$output = ob_get_clean();
+		return $output;
+		
+	} catch (Exception $e) {
+		ob_end_clean(); // バッファをクリア
+		return '<div class="error">エラーが発生しました</div>';
+	}
+}
+
+/**
+ * プログラムカードをレンダリング
+ */
+function render_program_card($program, $field_labels) {
+	ob_start();
+	?>
+	<article class="c-program-card">
+		<?php
+		// 画像情報を取得
+		$image_url = $program['_embedded']['wp:featuredmedia'][0]['source_url'] ?? '';
+		$image_alt = $program['_embedded']['wp:featuredmedia'][0]['alt_text'] ?? 'プログラム画像';
+		
+		// ダミー画像のフォールバック
+		if (empty($image_url)) {
+			$image_url = get_template_directory_uri() . '/assets/images/noimage.png';
+		}
+		?>
+		
+		<div class="c-program-card__image">
+			<img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($image_alt); ?>" loading="lazy" />
+		</div>
+		
+
+		
+		<div class="c-program-card__content">
+			<h3 class="c-program-card__title">
+				<?php echo esc_html($program['title']['rendered']); ?>
+			</h3>
+			
+			<?php if (!empty($program['program_description'])): ?>
+				<div class="c-program-card__description">
+					<?php echo wp_kses_post($program['program_description']); ?>
+				</div>
+			<?php endif; ?>
+			
+			<div class="c-program-card__meta">
+				<?php if (!empty($program['degree_type'])): ?>
+					<span class="c-badge c-badge--<?php echo esc_attr($program['degree_type']); ?>">
+						<?php echo $program['degree_type'] === 'with' ? '学位取得あり' : '学位取得なし'; ?>
+					</span>
+				<?php endif; ?>
+				
+				<?php if (!empty($program['program_layer'])): ?>
+					<span class="c-badge c-badge--<?php echo esc_attr($program['program_layer']); ?>">
+						<?php
+						$layer_labels = [
+							'foundation' => '基盤',
+							'core' => 'コア',
+							'collaboration' => '連携'
+						];
+						echo esc_html($layer_labels[$program['program_layer']] ?? 'その他');
+						?>
+					</span>
+				<?php endif; ?>
+			</div>
+			
+			<?php if (!empty($program['field_tags'])): ?>
+				<div class="c-program-card__tags">
+					<?php foreach ($program['field_tags'] as $index => $tag): ?>
+						<span class="c-tag">
+							<?php 
+							$label = $program['field_labels'][$index] ?? $field_labels[$tag] ?? $tag;
+							echo esc_html($label);
+							?>
+						</span>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+			
+			<?php if (!empty($program['program_url'])): ?>
+				<a href="<?php echo esc_url($program['program_url']); ?>" 
+				   class="c-program-card__link" 
+				   target="_blank" 
+				   rel="noopener noreferrer">
+					詳細を見る
+				</a>
+			<?php endif; ?>
+		</div>
+	</article>
+	<?php
+	return ob_get_clean();
 }
 add_shortcode( 'program_search', 'program_search_shortcode' );
+
 
 add_action( 'wp_enqueue_scripts', 'kobe_u_scripts' );
 
@@ -410,3 +655,69 @@ add_shortcode('add_part', function($attr){
 	get_template_part($attr['temp']);
 	return ob_get_clean();
 });
+
+/**
+ * 管理画面用JavaScript（プログラムタイプ連動制御）の読み込み
+ */
+function enqueue_admin_scripts($hook) {
+    // プログラム投稿タイプの編集画面のみで読み込み
+    if ($hook !== 'post.php' && $hook !== 'post-new.php') {
+        return;
+    }
+    
+    global $post;
+    if (!$post || $post->post_type !== 'programs') {
+        return;
+    }
+    
+    // 管理画面用JavaScript を読み込み
+    wp_enqueue_script(
+        'programs-admin-script',
+        get_template_directory_uri() . '/js/admin.js',
+        array(),
+        filemtime(get_template_directory() . '/js/admin.js'),
+        true
+    );
+}
+add_action('admin_enqueue_scripts', 'enqueue_admin_scripts');
+
+/**
+ * プログラムタイプの値検証（保存時）
+ */
+function validate_program_type_on_save($post_id) {
+    // 自動保存・リビジョン・権限チェック
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (wp_is_post_revision($post_id)) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    
+    // プログラム投稿タイプのみ対象
+    if (get_post_type($post_id) !== 'programs') return;
+    
+    // ACFフィールドの値を取得
+    $degree_type = $_POST['acf']['field_degree_type'] ?? '';
+    $program_type = $_POST['acf']['field_program_type'] ?? '';
+    
+    // バリデーションルール
+    $allowed_combinations = [
+        'with' => ['professional', 'special'],
+        'without' => ['interdisciplinary', 'other_recurrent']
+    ];
+    
+    // 不正な組み合わせをチェック
+    if ($degree_type && $program_type) {
+        $allowed_program_types = $allowed_combinations[$degree_type] ?? [];
+        
+        if (!in_array($program_type, $allowed_program_types)) {
+            // エラーメッセージをセット
+            add_action('admin_notices', function() use ($degree_type, $program_type) {
+                echo '<div class="notice notice-error"><p>';
+                echo '学位取得「' . $degree_type . '」とプログラムタイプ「' . $program_type . '」の組み合わせは無効です。';
+                echo '</p></div>';
+            });
+            
+            // 不正な値の場合は保存を中断（オプション）
+            // remove_action('save_post', 'validate_program_type_on_save');
+        }
+    }
+}
+add_action('save_post', 'validate_program_type_on_save');
