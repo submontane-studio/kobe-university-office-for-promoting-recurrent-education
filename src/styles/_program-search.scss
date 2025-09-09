@@ -265,7 +265,7 @@
   all: unset;
   display: block;
   margin: 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -430,4 +430,263 @@
   padding: 12px 0;
   background: #f6f6f6;
   text-align: center;
+}
+
+// 結果なしメッセージ
+.c-no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 18px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+// ページネーション
+.c-pagination {
+  margin-top: 40px;
+  margin-bottom: 140px;
+  display: flex;
+  justify-content: center;
+
+  &__buttons {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__button {
+    background: #e0e0e0;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+
+    &:hover:not(&--active) {
+      background: #d0d0d0;
+    }
+
+    &--active {
+      background: #333;
+      color: white;
+    }
+
+    &--prev,
+    &--next {
+      padding: 8px 16px;
+      font-weight: 500;
+    }
+  }
+
+  &__ellipsis {
+    padding: 8px 4px;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// スマートフォン対応（768px未満）
+@media (max-width: 767px) {
+  #program-search {
+    // フィルタ領域
+    .c-program-search__filters {
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+      
+      .c-program-search__filter-group {
+        width: 100%;
+        gap: 8px;
+        margin-bottom: 20px;
+        
+        label {
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+        
+        // 学位取得select
+        .c-select-wrapper select {
+          width: 100%;
+          padding: 12px 40px 12px 70px;
+          font-size: 16px;
+          min-height: 44px;
+          border-radius: 6px;
+        }
+        
+        // 分野ラジオボタン
+        .c-radio-group {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 8px;
+          
+          &__label {
+            font-size: 14px;
+            padding: 8px 16px;
+            padding-left: 36px;
+            min-height: 44px;
+            justify-content: flex-start;
+            
+            // #マークアイコンの位置調整
+            &::before {
+              left: 16px;
+            }
+          }
+        }
+        
+        // 検索ボタン
+        .c-search-button {
+          width: 100%;
+          height: 56px;
+          font-size: 18px;
+          padding: 12px 24px;
+          min-height: 44px;
+          
+          &::before {
+            left: 20px;
+            width: 24px;
+            height: 24px;
+          }
+        }
+      }
+    }
+    
+    // プログラム一覧グリッド
+    .c-programs-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 20px;
+      padding: 0 20px;
+      
+      .c-program-card {
+        width: 100%;
+        
+        // 画像
+        .c-program-card__image {
+          height: 200px;
+          border-radius: 6px;
+        }
+        
+        // ヘッダー（タグ）
+        .c-program-card__header {
+          padding: 12px 0 8px 0;
+          
+          .c-program-card__category,
+          .c-program-card__tags {
+            font-size: 12px;
+            padding: 6px 12px;
+            min-height: 32px;
+            display: inline-flex;
+            align-items: center;
+          }
+        }
+        
+        // タイトル
+        .c-program-card__title {
+          padding: 8px 0;
+          
+          h5 {
+            font-size: 18px;
+            line-height: 1.4;
+          }
+        }
+        
+        // フッター
+        .c-program-card__footer {
+          padding: 12px 16px;
+          font-size: 14px;
+        }
+      }
+    }
+    
+    // 結果なしメッセージ
+    .c-no-results {
+      padding: 40px 20px;
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+    
+    // セクションタイトル
+    .c-program-search__title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    // 検索結果ヘッダー
+    .c-program-search__result-header {
+      padding: 0 20px;
+    }
+
+    .c-program-search__result-title {
+      font-size: 14px;
+    }
+
+    .c-program-search__result-count {
+      font-size: 14px;
+    }
+    
+    // プログラムグループタイトル
+    .c-program-group__title {
+      font-size: 22px;
+    }
+    
+    .c-program-group__title-wrapper {
+      margin-bottom: 40px;
+    }
+    
+    // プログラムタイプグループタイトル
+    .c-program-type-group__title {
+      font-size: 20px;
+      margin-bottom: 20px;
+      padding: 8px 0;
+    }
+    
+    // プログラムタイプグループ間隔
+    .c-program-type-group {
+      margin-bottom: 40px;
+    }
+    
+    // プログラムグループ間隔
+    .c-program-group + .c-program-group {
+      margin-top: 60px;
+    }
+
+    // ページネーション（スマホ）
+    .c-pagination {
+      margin-top: 30px;
+      margin-bottom: 70px;
+
+      &__buttons {
+        gap: 20px;
+      }
+
+      &__button {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+
+        &--prev,
+        &--next {
+          padding: 6px 12px;
+        }
+      }
+
+      &__ellipsis {
+        padding: 6px 3px;
+        font-size: 13px;
+      }
+    }
+  }
 }

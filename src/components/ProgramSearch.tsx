@@ -41,6 +41,8 @@ export function ProgramSearch() {
   const [selectedDegreeType, setSelectedDegreeType] = useState<string>('all');
   const [selectedField, setSelectedField] = useState<string>('all');
   const [availableFields, setAvailableFields] = useState<{slug: string, label: string}[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(6); // 1ページあたりの表示件数
 
   // WordPressから渡されたデータを取得
   const loadProgramsData = () => {
@@ -98,6 +100,7 @@ export function ProgramSearch() {
   // 検索ボタンクリック時の処理
   const handleSearch = () => {
     filterPrograms();
+    setCurrentPage(1); // 検索時はページを1に戻す
     
     // 初期表示を隠してフィルタリング結果を表示
     const initialDisplay = document.getElementById('programs-initial-display');
@@ -109,6 +112,102 @@ export function ProgramSearch() {
     if (filteredResults) {
       filteredResults.style.display = 'block';
     }
+  };
+
+  // ページネーション用の関数
+  const getPaginatedPrograms = (programs: Program[]) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return programs.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = (totalItems: number) => {
+    return Math.ceil(totalItems / itemsPerPage);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // ページ変更時に最上部にスクロール
+    const searchResults = document.getElementById('filtered-results');
+    if (searchResults) {
+      searchResults.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // ページャーコンポーネント
+  const renderPagination = (totalItems: number) => {
+    const totalPages = getTotalPages(totalItems);
+    
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+
+    // 最初のページ
+    if (startPage > 1) {
+      pages.push(
+        <button
+          key={1}
+          className="c-pagination__button"
+          onClick={() => handlePageChange(1)}
+        >
+          1
+        </button>
+      );
+      if (startPage > 2) {
+        pages.push(
+          <span key="ellipsis1" className="c-pagination__ellipsis">…</span>
+        );
+      }
+    }
+
+    // ページ番号
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          className={`c-pagination__button ${i === currentPage ? 'c-pagination__button--active' : ''}`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // 最後のページ
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <span key="ellipsis2" className="c-pagination__ellipsis">…</span>
+        );
+      }
+      pages.push(
+        <button
+          key={totalPages}
+          className="c-pagination__button"
+          onClick={() => handlePageChange(totalPages)}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+
+    return (
+      <div className="c-pagination">
+        <div className="c-pagination__buttons">
+          {pages}
+        </div>
+      </div>
+    );
   };
 
   // 初期データの読み込み
@@ -239,7 +338,7 @@ export function ProgramSearch() {
                 const withDegree = filteredPrograms.filter(program => program.degree_type === 'with');
                 const withoutDegree = filteredPrograms.filter(program => program.degree_type === 'without');
                 
-                // プログラムタイプでグループ化する関数
+                // プログラムタイプでグループ化する関数（ページネーションなし）
                 const groupByProgramType = (programs: Program[]) => {
                   const groups: { [key: string]: Program[] } = {};
                   programs.forEach(program => {
@@ -251,6 +350,9 @@ export function ProgramSearch() {
                   });
                   return groups;
                 };
+
+                // ページネーション用：全体のプログラムリストから現在ページの分を抽出
+                const paginatedPrograms = getPaginatedPrograms(filteredPrograms);
 
                 // カードコンポーネント
                 const renderProgramCard = (program: Program) => (
@@ -299,22 +401,32 @@ export function ProgramSearch() {
                   </a>
                 );
 
+                // ページネーション用：現在ページのプログラムを学位取得で分ける
+                const paginatedWithDegree = paginatedPrograms.filter(program => program.degree_type === 'with');
+                const paginatedWithoutDegree = paginatedPrograms.filter(program => program.degree_type === 'without');
+
                 return (
                   <>
-                    {withDegree.length > 0 && (
+                    {paginatedWithDegree.length > 0 && (
                       <div className="c-program-group">
                         <div className="c-program-group__title-wrapper">
                           <h3 className="c-program-group__title">学位取得を目指すもの</h3>
                         </div>
                         {(() => {
-                          const typeGroups = groupByProgramType(withDegree);
+                          const typeGroups = groupByProgramType(paginatedWithDegree);
                           return Object.entries(typeGroups).map(([typeKey, programs]) => (
                             <div key={typeKey} className="c-program-type-group">
                               <h4 className="c-program-type-group__title">
                                 {PROGRAM_TYPE_LABEL_MAP[typeKey] || typeKey}
                               </h4>
                               <div className="c-programs-grid">
-                                {programs.map(renderProgramCard)}
+                                {programs.length > 0 ? (
+                                  programs.map(renderProgramCard)
+                                ) : (
+                                  <div className="c-no-results">
+                                    このカテゴリに条件に一致する結果が見つかりません
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ));
@@ -322,26 +434,35 @@ export function ProgramSearch() {
                       </div>
                     )}
 
-                    {withoutDegree.length > 0 && (
+                    {paginatedWithoutDegree.length > 0 && (
                       <div className="c-program-group">
                         <div className="c-program-group__title-wrapper">
                           <h3 className="c-program-group__title">学位取得を伴わないもの</h3>
                         </div>
                         {(() => {
-                          const typeGroups = groupByProgramType(withoutDegree);
+                          const typeGroups = groupByProgramType(paginatedWithoutDegree);
                           return Object.entries(typeGroups).map(([typeKey, programs]) => (
                             <div key={typeKey} className="c-program-type-group">
                               <h4 className="c-program-type-group__title">
                                 {PROGRAM_TYPE_LABEL_MAP[typeKey] || typeKey}
                               </h4>
                               <div className="c-programs-grid">
-                                {programs.map(renderProgramCard)}
+                                {programs.length > 0 ? (
+                                  programs.map(renderProgramCard)
+                                ) : (
+                                  <div className="c-no-results">
+                                    このカテゴリに条件に一致する結果が見つかりません
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ));
                         })()}
                       </div>
                     )}
+
+                    {/* ページャー */}
+                    {renderPagination(filteredPrograms.length)}
                   </>
                 );
               })()
