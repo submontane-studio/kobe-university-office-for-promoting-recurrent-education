@@ -727,7 +727,7 @@ h3 span {
 }
 
 h4 {
-  border-bottom: 4px solid #ace912;
+  border-bottom: 3px solid #c40000;
   display: inline-block;
   line-height: 1;
   font-size: 3rem;
@@ -965,8 +965,7 @@ h6:after {
   outline-offset: -5px
 }
 
-.p-home {
-}
+.p-home {}
 
 
 
@@ -980,18 +979,18 @@ h6:after {
   height: 773px;
   position: relative;
   overflow: hidden;
-  
+
   @media (max-width: 767px) {
     background-image: url(./assets/images/top/photo_keyvisual01@sp.jpg);
     height: 50vh;
     min-height: 300px;
     background-position: center center;
   }
-  
 
-  
 
-  
+
+
+
   h2 {
     color: #333;
     font-size: 2.8rem;
@@ -1008,14 +1007,14 @@ h6:after {
     bottom: 96px;
     transform: none;
     box-shadow: none;
-    
+
     @media (max-width: 1024px) {
       font-size: 2.4rem;
       padding: 1.2rem 1.8rem;
       left: 40px;
       bottom: 80px;
     }
-    
+
     @media (max-width: 767px) {
       font-size: 1.8rem;
       padding: 12px 16px;
@@ -1120,7 +1119,7 @@ h6:after {
       @media (max-width: 767px) {
         font-size: 1.2rem;
       }
-      }
+    }
   }
 
   &__button {
@@ -1138,7 +1137,7 @@ h6:after {
     text-align: center;
     border: none;
     cursor: pointer;
-    
+
     &:hover {
       opacity: 0.8;
     }
@@ -1147,7 +1146,7 @@ h6:after {
       width: 330px;
       font-size: 18px;
     }
-    
+
     a {
       display: flex;
       align-items: center;
@@ -1659,11 +1658,11 @@ h6:after {
           font-size: 18px;
           padding: 14px 19px;
           line-height: 1.4;
-          
+
           a {
             color: #333;
             text-decoration: none;
-            
+
             &:hover {
               color: #dc143c;
               text-decoration: underline;
@@ -1676,11 +1675,11 @@ h6:after {
         font-size: 18px;
         padding: 14px 19px;
         line-height: 1.4;
-        
+
         a {
           color: #333;
           text-decoration: none;
-          
+
           &:hover {
             color: #dc143c;
             text-decoration: underline;
@@ -1700,7 +1699,7 @@ h6:after {
     @media (max-width: 767px) {
       width: 330px;
     }
-    
+
     a {
       display: flex;
       align-items: center;
@@ -1719,7 +1718,7 @@ h6:after {
       @media (max-width: 767px) {
         font-size: 18px;
       }
-      
+
       &:hover {
         opacity: 0.8;
       }
@@ -1930,6 +1929,7 @@ h6:after {
       object-fit: contain;
     }
   }
+
   &__ecosystem-button {
     display: flex;
     align-items: center;
@@ -1940,7 +1940,7 @@ h6:after {
     @media (max-width: 767px) {
       width: 330px;
     }
-    
+
     a {
       display: flex;
       align-items: center;
@@ -1959,7 +1959,7 @@ h6:after {
       @media (max-width: 767px) {
         font-size: 16px;
       }
-      
+
       &:hover {
         opacity: 0.8;
       }
@@ -2052,7 +2052,12 @@ h6:after {
 
   &__kv {
     position: relative;
-    height: 30vw;
+    height: 534px;
+    background-image: url('./assets/images/about/photo_about01.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    margin-bottom: 77px;
 
     @media (max-width: 599px) {
       height: 132vw;
@@ -2062,7 +2067,7 @@ h6:after {
       top: 9.3vw;
 
       @media (max-width: 599px) {
-        top: 28.5%;
+        top: 48.5%;
         width: 90%;
         white-space: initial;
       }
@@ -2072,7 +2077,7 @@ h6:after {
       top: 15vw;
 
       @media (max-width: 599px) {
-        top: 50%;
+        top: 70%;
         width: 90%;
         white-space: initial;
       }
@@ -2316,30 +2321,145 @@ h6:after {
 }
 
 .p-health {
-  background-image: url(./assets/images/photo.png), url(./assets/images/bg2.png);
-  background-repeat: no-repeat;
-  background-size: contain, cover;
+  // background-image: none !important;
   margin-top: 0
 }
 
-@media (max-width: 1024px) {
-  .p-health {
-    background-size: contain
-  }
-}
+
 
 @media (max-width: 599px) {
   .p-health {
-    background-image: url(./assets/images/photo_sp2.png), url(./assets/images/bg_sp2.png);
-    background-repeat: no-repeat;
-    background-size: contain;
     margin-top: 45px
   }
 }
 
 .p-health__kv {
   position: relative;
-  height: 40vw
+  height: 615px;
+  background-image: url('./assets/images/health/photo_health01.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 77px;
+
+  // 左側の青いデジタルネットワークオーバーレイ
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(41, 128, 185, 0.2) 0%,
+        rgba(52, 152, 219, 0.15) 25%,
+        rgba(85, 172, 238, 0.1) 50%,
+        transparent 75%);
+    z-index: 1;
+
+    // デジタルネットワーク風のドット効果
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 40px 40px, 60px 60px, 80px 80px;
+  }
+
+  // 右側の明るさ調整
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25%;
+    height: 100%;
+    background: linear-gradient(to left,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 100%);
+    z-index: 1;
+  }
+
+  h2,
+  h3 {
+    box-shadow: none;
+  }
+}
+
+// Mathematics Key Visual Section
+.p-mathematics__kv {
+  position: relative;
+  height: 615px;
+  background-image: url('./assets/images/mathematics/photo_mathematics.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 77px;
+
+  // 左側の青いデジタルネットワークオーバーレイ
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(41, 128, 185, 0.2) 0%,
+        rgba(52, 152, 219, 0.15) 25%,
+        rgba(85, 172, 238, 0.1) 50%,
+        transparent 75%);
+    z-index: 1;
+
+    // デジタルネットワーク風のドット効果
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 40px 40px, 60px 60px, 80px 80px;
+  }
+
+  // 右側の明るさ調整
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25%;
+    height: 100%;
+    background: linear-gradient(to left,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 100%);
+    z-index: 1;
+  }
+
+  h2,
+  h3 {
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 599px) {
+
+  .p-mathematics__kv h3 {
+    top: 53vw;
+    width: auto
+  }
+}
+
+.p-health__kv h2 {
+  top: 13vw
+}
+
+.p-health__kv h3 {
+  top: 18.7vw
 }
 
 @media (max-width: 599px) {
@@ -2348,25 +2468,15 @@ h6:after {
   }
 }
 
-.p-health__kv h2 {
-  top: 13vw
-}
-
 @media (max-width: 599px) {
   .p-health__kv h2 {
-    font-size: 8vw;
-    top: 36.3vw;
-    width: auto
+    top: 55vw
   }
-}
-
-.p-health__kv h3 {
-  top: 18.5vw
 }
 
 @media (max-width: 599px) {
   .p-health__kv h3 {
-    top: 53vw;
+    top: 73vw;
     width: auto
   }
 }
@@ -2378,7 +2488,7 @@ h6:after {
 }
 
 .p-health__purpose ul {
-  margin: 55px 0 70px
+  margin: 40px 0 70px
 }
 
 .p-health__purpose ul li h6:after {
@@ -2499,7 +2609,7 @@ h6:after {
 }
 
 .p-health__for h4 {
-  border-bottom: 4px solid #f1779a
+  border-bottom: 3px solid #c40000
 }
 
 .p-health__for .text {
@@ -2657,29 +2767,67 @@ h6:after {
 }
 
 .p-science {
-  background-image: url(./assets/images/photo2.png), url(./assets/images/bg4.png);
-  background-repeat: no-repeat;
-  background-size: contain, cover;
   margin-top: 0
 }
 
-@media (max-width: 1024px) {
-  .p-science {
-    background-size: contain
-  }
-}
 
-@media (max-width: 599px) {
-  .p-science {
-    background-image: url(./assets/images/photo_sp3.png), url(./assets/images/bg_sp3.png);
-    background-repeat: no-repeat;
-    background-size: contain, cover
-  }
-}
+
+
 
 .p-science__kv {
   position: relative;
-  height: 40vw
+  height: 615px;
+  background-image: url('./assets/images/science/photo_science01.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 77px;
+
+  // 左側の青いデジタルネットワークオーバーレイ（science用に青系）
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(41, 128, 185, 0.2) 0%,
+        rgba(52, 152, 219, 0.15) 25%,
+        rgba(85, 172, 238, 0.1) 50%,
+        transparent 75%);
+    z-index: 1;
+
+    // デジタルネットワーク風のドット効果
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 40px 40px, 60px 60px, 80px 80px;
+  }
+
+  // 右側の明るさ調整
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25%;
+    height: 100%;
+    background: linear-gradient(to left,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 100%);
+    z-index: 1;
+  }
+
+  h2,
+  h3 {
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 599px) {
@@ -2688,6 +2836,8 @@ h6:after {
   }
 }
 
+
+
 .p-science__kv h2 {
   top: 13vw
 }
@@ -2695,9 +2845,11 @@ h6:after {
 @media (max-width: 599px) {
   .p-science__kv h2 {
     font-size: 8vw;
-    top: 36.3vw
+    top: 56.3vw
   }
 }
+
+
 
 .p-science__kv h3 {
   top: 18.7vw
@@ -2705,7 +2857,7 @@ h6:after {
 
 @media (max-width: 599px) {
   .p-science__kv h3 {
-    top: 61vw
+    top: 81vw
   }
 }
 
@@ -3016,9 +3168,6 @@ h6:after {
 }
 
 .p-mathematics {
-  background-image: url(./assets/images/photo3.png), url(./assets/images/bg3.png);
-  background-repeat: no-repeat;
-  background-size: contain, cover;
   margin-top: 60px
 }
 
@@ -3030,15 +3179,66 @@ h6:after {
 
 @media (max-width: 599px) {
   .p-mathematics {
-    background-image: url(./assets/images/photo_sp4.png), url(./assets/images/bg_sp4.png);
-    background-size: contain;
+    // background-image: url(./assets/images/photo_sp4.png), url(./assets/images/bg_sp4.png);
+    // background-size: contain;
     margin-top: 0
   }
 }
 
 .p-mathematics__kv {
   position: relative;
-  height: 40vw
+  height: 615px;
+  background-image: url('./assets/images/mathematics/photo_mathematics.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 77px;
+
+  // 左側の青いデジタルネットワークオーバーレイ（mathematics用に緑系）
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(34, 139, 34, 0.2) 0%,
+        rgba(50, 205, 50, 0.15) 25%,
+        rgba(144, 238, 144, 0.1) 50%,
+        transparent 75%);
+    z-index: 1;
+
+    // デジタルネットワーク風のドット効果
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 40px 40px, 60px 60px, 80px 80px;
+  }
+
+  // 右側の明るさ調整
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25%;
+    height: 100%;
+    background: linear-gradient(to left,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 100%);
+    z-index: 1;
+  }
+
+  h2,
+  h3 {
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 599px) {
@@ -3047,6 +3247,7 @@ h6:after {
   }
 }
 
+
 .p-mathematics__kv h2 {
   top: 13vw
 }
@@ -3054,19 +3255,20 @@ h6:after {
 @media (max-width: 599px) {
   .p-mathematics__kv h2 {
     font-size: 6vw;
-    top: 30vw;
+    top: 50vw;
     width: 66.93%
   }
 }
 
+
 .p-mathematics__kv h3 {
-  top: 18.5vw
+  top: 18.7vw
 }
 
 @media (max-width: 599px) {
   .p-mathematics__kv h3 {
     font-size: 3vw;
-    top: 50vw;
+    top: 70vw;
     width: auto
   }
 }
@@ -3512,7 +3714,7 @@ h6:after {
     border: none;
     cursor: pointer;
     padding: 0;
-    
+
     &:hover {
       opacity: 0.8;
     }
@@ -3521,7 +3723,7 @@ h6:after {
   &__text {
     flex: 1;
     text-align: left;
-    
+
     h3 {
       all: unset;
       display: block;
