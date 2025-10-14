@@ -147,6 +147,56 @@
             },
             "default_value": "",
             "placeholder": "https://example.com"
+        },
+        {
+            "key": "field_video_url",
+            "label": "動画URL",
+            "name": "video_url",
+            "type": "url",
+            "instructions": "プログラムの動画URLを入力してください（動画アイコンでリンクされます）",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https://example.com/video"
+        },
+        {
+            "key": "field_application_start_date",
+            "label": "応募開始日",
+            "name": "application_start_date",
+            "type": "date_picker",
+            "instructions": "応募開始日を選択してください",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y/m/d",
+            "return_format": "Y/m/d",
+            "first_day": 1
+        },
+        {
+            "key": "field_application_end_date",
+            "label": "応募終了日",
+            "name": "application_end_date",
+            "type": "date_picker",
+            "instructions": "応募終了日を選択してください",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y/m/d",
+            "return_format": "Y/m/d",
+            "first_day": 1
         }
     ],
     "location": [

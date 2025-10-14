@@ -1,5 +1,6 @@
 // vite.config.ts
 import { defineConfig, loadEnv } from 'vite';
+import preact from '@preact/preset-vite';
 import devManifest from 'vite-plugin-dev-manifest';
 import sassGlobImports from 'vite-plugin-sass-glob-import';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -55,6 +56,7 @@ export default defineConfig(({ mode }) => {
     },
 
     plugins: [
+      preact(),
       sassGlobImports(),
       devManifest(),
       viteStaticCopy({
@@ -63,12 +65,22 @@ export default defineConfig(({ mode }) => {
             src: path.resolve(__dirname, `${env.SRC}/**/*.php`),
             dest: path.resolve(__dirname, `${env.DIST}`)
           },
+          {
+            src: path.resolve(__dirname, `${env.SRC}/acf-json`),
+            dest: path.resolve(__dirname, `${env.DIST}`)
+          },
+          {
+            src: path.resolve(__dirname, `${env.SRC}/js/admin.js`),
+            dest: path.resolve(__dirname, `${env.DIST}/js`)
+          },
         ],
       }),
     ],
 
     css: {
-      preprocessorOptions: { scss: { api: 'modern-compiler' } },
+      preprocessorOptions: { 
+        scss: {} 
+      },
     },
 
     server: {

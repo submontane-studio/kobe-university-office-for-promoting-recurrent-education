@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagetopボタンテスト</title>
+    <link rel="stylesheet" href="./dist/style.css">
+</head>
+<body>
+    <header style="height: 80px; background: #f0f0f0; padding: 20px;">
+        <h1>テストページ</h1>
+    </header>
+    
+    <main style="padding: 20px;">
+        <section style="height: 500px; background: #e0e0e0; margin: 20px 0; padding: 20px;">
+            <h2>セクション1</h2>
+            <p>ここでスクロールテストを行います。200px以上スクロールするとPagetopボタンが固定表示になります。</p>
+        </section>
+        
+        <section style="height: 500px; background: #d0d0d0; margin: 20px 0; padding: 20px;">
+            <h2>セクション2</h2>
+            <p>このセクションでスクロール動作を確認できます。</p>
+        </section>
+        
+        <section style="height: 500px; background: #c0c0c0; margin: 20px 0; padding: 20px;">
+            <h2>セクション3</h2>
+            <p>更にスクロールして動作を確認します。</p>
+        </section>
+        
+        <section style="height: 500px; background: #b0b0b0; margin: 20px 0; padding: 20px;">
+            <h2>セクション4</h2>
+            <p>最後のセクションです。ここからPagetopボタンをクリックしてページトップに戻れます。</p>
+        </section>
+    </main>
+    
+    <!-- Pagetopボタン -->
+    <button id="pagetop-btn" class="c-pagetop" type="button" aria-label="ページの上部に戻る">
+        <img src="./src/assets/images/btn_pagetop01.svg" alt="Page Top" width="88" height="87">
+    </button>
+    
+    <script>
+        // Pagetopボタンの機能
+        (function() {
+            // 即座に実行または読み込み完了後に実行
+            function initPagetop() {
+                const pagetopButton = document.getElementById('pagetop-btn');
+                
+                if (!pagetopButton) {
+                    return;
+                }
+
+                // スムーススクロールでページトップに戻る
+                function scrollToTop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+
+                // イベントリスナーの設定
+                pagetopButton.addEventListener('click', scrollToTop);
+
+                // キーボードでのアクセス（Enterキー、Spaceキー）
+                pagetopButton.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        scrollToTop();
+                    }
+                });
+            }
+
+            // DOMが既に読み込み済みかチェック
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initPagetop);
+            } else {
+                // 既に読み込み済みの場合は即座に実行
+                initPagetop();
+            }
+        })();
+    </script>
+</body>
+</html>

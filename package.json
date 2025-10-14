@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.49.0",
+    "@playwright/test": "^1.55.0",
     "@types/bun": "latest",
     "@wordpress/env": "^10.29.0",
     "autoprefixer": "^10.4.21",
@@ -38,5 +39,11 @@
   },
   "peerDependencies": {
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "@types/jquery": "^3.5.33",
+    "jquery": "^3.7.1",
+    "preact": "^10.27.1"
   }
 }

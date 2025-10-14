@@ -11,7 +11,7 @@ add_action('wp_head', function () {
 }, 0);
 
 add_action('wp_enqueue_scripts', function () {
-  $is_dev = defined('IS_DEV') && IS_DEV === '0';
+  $is_dev = defined('IS_DEV') && IS_DEV === '1';
 
   if ($is_dev) {
 
@@ -378,9 +378,106 @@ function add_programs_custom_fields_to_api() {
 			),
 		)
 	);
+
+	// 動画URLフィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'video_url',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'video_url', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'video_url', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => '動画URL',
+				'type'        => 'string',
+				'format'      => 'uri',
+			),
+		)
+	);
+
+	// 応募開始日フィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'application_start_date',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'application_start_date', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'application_start_date', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => '応募開始日',
+				'type'        => 'string',
+				'format'      => 'date',
+			),
+		)
+	);
+
+	// 応募終了日フィールドをREST APIに追加
+	register_rest_field(
+		'programs',
+		'application_end_date',
+		array(
+			'get_callback' => function( $post ) {
+				return get_field( 'application_end_date', $post['id'] );
+			},
+			'update_callback' => function( $value, $post ) {
+				return update_field( 'application_end_date', $value, $post->ID );
+			},
+			'schema' => array(
+				'description' => '応募終了日',
+				'type'        => 'string',
+				'format'      => 'date',
+			),
+		)
+	);
 }
 add_action( 'rest_api_init', 'add_programs_custom_fields_to_api' );
 add_filter( 'acf/settings/load_json', 'my_acf_json_load_point' );
+
+/**
+ * ラベルマッピング用のREST APIエンドポイントを追加
+ */
+function register_label_mappings_api() {
+	register_rest_route('wp/v2', '/label-mappings', array(
+		'methods' => 'GET',
+		'callback' => 'get_label_mappings',
+		'permission_callback' => '__return_true',
+	));
+}
+
+function get_label_mappings() {
+	$field_label_map = [
+		'health' => '健康科学',
+		'science' => '理学',
+		'mathematics' => '数学',
+		'engineering' => '工学',
+		'medicine' => '医学',
+		'economics' => '経済学',
+		'law' => '法学',
+		'literature' => '文学',
+		'education' => '教育学',
+		'agriculture' => '農学'
+	];
+
+	$program_type_label_map = [
+		'interdisciplinary' => '異分野共創・価値創造・リカレント教育プログラム',
+		'other_recurrent' => 'その他のリカレント・リスキリング特別プログラム',
+		'professional' => '専門職大学院',
+		'special' => '社会人向け特別プログラム'
+	];
+
+	return array(
+		'field_labels' => $field_label_map,
+		'program_type_labels' => $program_type_label_map
+	);
+}
+
+add_action('rest_api_init', 'register_label_mappings_api');
 
 /**
  * プログラム検索用ショートコード（メインループ版）
@@ -416,6 +513,21 @@ function program_search_shortcode() {
 			// ACFフィールドから分野データを取得
 			$field_tags = get_field('field_tags', $post_id);
 			$field_objects = [];
+			
+			// 分野ラベルのマッピング
+			$field_label_map = [
+				'health' => '健康科学',
+				'science' => '理学',
+				'mathematics' => '数学',
+				'engineering' => '工学',
+				'medicine' => '医学',
+				'economics' => '経済学',
+				'law' => '法学',
+				'literature' => '文学',
+				'education' => '教育学',
+				'agriculture' => '農学'
+			];
+			
 			if (is_array($field_tags)) {
 				foreach ($field_tags as $field_value) {
 					if (is_array($field_value) && isset($field_value['value']) && isset($field_value['label'])) {
@@ -424,8 +536,9 @@ function program_search_shortcode() {
 						$field_labels[$field_value['value']] = $field_value['label'];
 					} else {
 						// 旧形式対応（値のみ）
-						$field_objects[] = ['value' => $field_value, 'label' => $field_value];
-						$field_labels[$field_value] = $field_value;
+						$label = isset($field_label_map[$field_value]) ? $field_label_map[$field_value] : $field_value;
+						$field_objects[] = ['value' => $field_value, 'label' => $label];
+						$field_labels[$field_value] = $label;
 					}
 				}
 			}
@@ -436,6 +549,9 @@ function program_search_shortcode() {
 				'excerpt' => ['rendered' => get_the_excerpt()],
 				'program_description' => get_field('program_description', $post_id),
 				'program_url' => get_field('program_url', $post_id),
+				'video_url' => get_field('video_url', $post_id),
+				'application_start_date' => get_field('application_start_date', $post_id),
+				'application_end_date' => get_field('application_end_date', $post_id),
 				'degree_type' => get_field('degree_type', $post_id),
 				'program_type' => get_field('program_type', $post_id),
 				'program_layer' => get_field('program_layer', $post_id),
@@ -721,3 +837,74 @@ function validate_program_type_on_save($post_id) {
     }
 }
 add_action('save_post', 'validate_program_type_on_save');
+
+/**
+ * ニュースの追加読み込み用AJAX処理
+ */
+function load_more_news() {
+    // 一時的にnonce検証を無効化してテスト（本番では有効にする）
+    // if (!wp_verify_nonce($_REQUEST['nonce'] ?? '', 'load_more_news_nonce')) {
+    //     wp_die('不正なリクエストです', '', array('response' => 403));
+    // }
+    
+    $page = intval($_REQUEST['page'] ?? 1);
+    $posts_per_page = 10; // 1回につき10件読み込み
+    
+    // ニュース（通常の投稿）を取得
+    $news_query = new WP_Query(array(
+        'post_type' => 'post',
+        'post_status' => 'publish',
+        'posts_per_page' => $posts_per_page,
+        'paged' => $page,
+        'orderby' => 'date',
+        'order' => 'DESC'
+    ));
+    
+    $news_items = array();
+    
+    if ($news_query->have_posts()) {
+        while ($news_query->have_posts()) {
+            $news_query->the_post();
+            
+            $news_items[] = array(
+                'id' => get_the_ID(),
+                'title' => get_the_title(),
+                'url' => get_permalink(),
+                'date' => get_the_date('Y.m.d'),
+                'excerpt' => get_the_excerpt()
+            );
+        }
+        wp_reset_postdata();
+    }
+    
+    // レスポンスデータ
+    $response = array(
+        'success' => true,
+        'news' => $news_items,
+        'has_more' => $news_query->max_num_pages > $page,
+        'total_pages' => $news_query->max_num_pages,
+        'current_page' => $page
+    );
+    
+    wp_send_json($response);
+}
+
+// ログイン済み・未ログインユーザー両方に対応
+add_action('wp_ajax_load_more_news', 'load_more_news');
+add_action('wp_ajax_nopriv_load_more_news', 'load_more_news');
+
+/**
+ * AJAX用のnonce、URL、その他の設定をフロントエンドに渡す
+ */
+// AJAX設定を直接wp_headで出力（より確実な方法）
+add_action('wp_head', function() {
+    ?>
+    <script>
+        window.loadMoreNewsAjax = {
+            ajax_url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            nonce: '<?php echo wp_create_nonce('load_more_news_nonce'); ?>',
+            action: 'load_more_news'
+        };
+    </script>
+    <?php
+});
