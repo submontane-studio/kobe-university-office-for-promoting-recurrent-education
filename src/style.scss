@@ -2,6 +2,7 @@
 
 // プログラム検索コンポーネントのスタイル
 @use './styles/program-search';
+@use './styles/home';
 
 * {
   box-sizing: border-box
@@ -662,17 +663,17 @@ ul {
 }
 
 .l-inner {
-  max-width: 1000px;
+  max-width: 700px;
   margin: 0 auto;
   text-align: center
 }
 
 .l-inner--wide {
-  max-width: 1332px
+  max-width: 932px
 }
 
 .l-inner--narrow {
-  max-width: 732px
+  max-width: 512px
 }
 
 @media (max-width: 1024px) {
@@ -853,7 +854,7 @@ h6:after {
 .c-nav__list-item {
   border-bottom: 2px dashed #fff;
   line-height: 100%;
-  padding: 30px 0
+  padding: 30px 0;
 }
 
 @media (max-width: 599px) {
@@ -874,7 +875,7 @@ h6:after {
   position: relative;
   color: #000;
   display: inline-flex;
-  font-size: 1.3125rem;
+  font-size: 1.6rem;
   font-weight: 600;
   flex-direction: column
 }
@@ -1037,7 +1038,7 @@ h6:after {
   &__cards {
     display: flex;
     gap: 55px;
-    width: 1460px;
+    width: 1022px;
     margin: 0 auto;
     list-style: none;
     padding: 0;
@@ -1050,7 +1051,7 @@ h6:after {
   }
 
   &__card {
-    width: 450px;
+    width: 315px;
     border-radius: 8px;
     overflow: hidden;
 
@@ -1060,7 +1061,7 @@ h6:after {
   }
 
   &__card__content {
-    padding: 12px 50px;
+    padding: 12px 45px;
     background-image: url(./assets/images/top/bg_lean01.png);
     background-repeat: no-repeat;
     background-size: cover;
@@ -1070,7 +1071,7 @@ h6:after {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-size: 20px;
+    font-size: 14px;
     line-height: 1.7;
 
     @media (max-width: 767px) {
@@ -1078,7 +1079,7 @@ h6:after {
     }
 
     h4 {
-      font-size: 3.2rem;
+      font-size: 2.24rem;
       font-weight: normal;
       line-height: 1.2;
       margin: 0 auto 40px auto;
@@ -1090,7 +1091,7 @@ h6:after {
       .highlight {
         color: #e60012;
         font-weight: bold;
-        font-size: 52px;
+        font-size: 36px;
       }
 
       .indent {
@@ -1111,7 +1112,7 @@ h6:after {
     }
 
     p {
-      font-size: 20px;
+      font-size: 16px;
       line-height: 1.6;
       color: #555;
       margin: 0;
@@ -1127,10 +1128,10 @@ h6:after {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 455px;
+    width: 319px;
     min-height: 70px;
     margin: 105px auto 0 auto;
-    font-size: 24px;
+    font-size: 17px;
     background-color: #141414;
     color: white;
     text-decoration: none;
@@ -1144,8 +1145,8 @@ h6:after {
     }
 
     @media (max-width: 767px) {
-      width: 330px;
-      font-size: 18px;
+      width: 231px;
+      font-size: 13px;
     }
 
     a {
@@ -1367,7 +1368,7 @@ h6:after {
 }
 
 .p-home__about__program-list ul.program-list-content li {
-  max-width: 460px;
+  max-width: 322px;
   margin-bottom: 15px;
   width: 80vw;
 }
@@ -1526,7 +1527,7 @@ h6:after {
 .p-home__comment ul li {
   background-color: #fff;
   box-shadow: 0 8px 16px #00000008;
-  max-width: 460px
+  max-width: 322px
 }
 
 .p-home__comment ul li a .content {
@@ -1705,11 +1706,11 @@ h6:after {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 380px;
+    width: 266px;
     margin: 40px auto 0 auto;
 
     @media (max-width: 767px) {
-      width: 330px;
+      width: 231px;
     }
 
     button {
@@ -1718,7 +1719,7 @@ h6:after {
       justify-content: center;
       width: 100%;
       min-height: 70px;
-      font-size: 24px;
+      font-size: 17px;
       background-color: #141414;
       color: white;
       text-decoration: none;
@@ -1728,7 +1729,7 @@ h6:after {
       cursor: pointer;
 
       @media (max-width: 767px) {
-        font-size: 18px;
+        font-size: 13px;
       }
 
       &:hover {
@@ -1751,7 +1752,7 @@ h6:after {
   }
 
   .l-inner h4 {
-    font-size: 50px;
+    font-size: 35px;
     font-weight: 500;
     border-bottom: none;
 
@@ -1761,7 +1762,7 @@ h6:after {
   }
 
   .content {
-    max-width: 700px;
+    // max-width: 490px;
     margin: 0 auto;
 
     ul {
@@ -1855,15 +1856,14 @@ h6:after {
 }
 
 .p-home__faculties {
-  padding: 40px 0 90px 0;
-  width: 100%;
+  width: 88.541%;
+  margin: 0 auto 90px;
+  border: 1px solid #e0e0e0;
 
   &__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     width: 100%;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
 
     @media (max-width: 767px) {
       grid-template-columns: 1fr;
@@ -1872,7 +1872,7 @@ h6:after {
 
   &__card {
     background-color: #fff;
-    padding: 30px 10px 130px;
+    padding: 30px 10px 90px;
     border-right: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
@@ -1881,6 +1881,7 @@ h6:after {
 
     &>p {
       padding: 0 15px;
+      font-size: 14px;
     }
 
     @media (max-width: 767px) {
@@ -1894,7 +1895,7 @@ h6:after {
     }
 
     h3 {
-      font-size: 36px;
+      font-size: 30px;
       font-weight: bold;
       color: #333;
       margin: 0 0 28px 0;
@@ -1941,7 +1942,7 @@ h6:after {
 
   &__illust {
     width: 100%;
-    height: 300px;
+    height: 210px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -1958,11 +1959,11 @@ h6:after {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 640px;
-    margin: 100px auto 0 auto;
+    width: 448px;
+    margin: 60px auto 0 auto;
 
     @media (max-width: 767px) {
-      width: 330px;
+      width: 231px;
       margin-top: 30px;
     }
 
@@ -1972,7 +1973,7 @@ h6:after {
       justify-content: center;
       width: 100%;
       min-height: 70px;
-      font-size: 24px;
+      font-size: 17px;
       background-color: #141414;
       color: white;
       text-decoration: none;
@@ -1982,7 +1983,7 @@ h6:after {
       cursor: pointer;
 
       @media (max-width: 767px) {
-        font-size: 16px;
+        font-size: 11px;
       }
 
       &:hover {
@@ -1995,11 +1996,11 @@ h6:after {
 .p-home__faculties-title {
   all: unset;
   display: block;
-  margin: 0;
+  margin: 0 0 40px;
   padding: 0;
   border: 0;
   font-weight: 500;
-  font-size: 50px;
+  font-size: 35px;
   text-align: center;
   vertical-align: baseline;
   box-sizing: border-box;
@@ -2021,10 +2022,12 @@ h6:after {
 .p-home__link {
   padding: 0 0 59px;
 
-  .l-inner h4 {
-    font-size: 50px;
+  h4 {
+    font-size: 35px;
     font-weight: 500;
     border-bottom: none;
+    text-align: center;
+    display: block;
 
     @media (max-width: 767px) {
       font-size: 26px;
@@ -2036,10 +2039,15 @@ h6:after {
     flex-wrap: wrap;
     justify-content: center;
     gap: 27px 44px;
-    margin: 58px 0 0;
+    margin: 58px auto 0;
+    width: 940px;
+
+    @media (max-width: 767px) {
+      width: 100%;
+    }
 
     &:last-child {
-      margin: 27px 0 0;
+      margin: 49px auto 0;
     }
 
     @media (max-width: 1024px) {
@@ -3704,7 +3712,7 @@ h6:after {
     display: flex;
     align-items: flex-start;
     gap: 50px;
-    width: 1270px;
+    width: 889px;
     margin: 0 auto;
 
     @media (max-width: 767px) {
@@ -3716,8 +3724,8 @@ h6:after {
 
   &__player {
     flex: 1;
-    min-width: 400px;
-    max-width: 595px;
+    min-width: 280px;
+    max-width: 417px;
 
     @media (max-width: 767px) {
       min-width: auto;

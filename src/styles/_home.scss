@@ -1,39 +1,11 @@
 // ホームページ関連スタイル
 .p-home {
-  &__kv {
-    position: relative;
-    height: 65vw;
-
-    @media (max-width: 599px) {
-      height: 132vw;
-    }
-
-    h2 {
-      top: 32.5%;
-
-      @media (max-width: 599px) {
-        top: 28.5%;
-        width: 90vw;
-      }
-    }
-
-    h3 {
-      top: 41.5%;
-
-      @media (max-width: 599px) {
-        top: 50%;
-        width: 90vw;
-        white-space: initial;
-      }
-    }
-  }
-
   &__program {
     text-align: center;
     width: 100%;
 
     @media (max-width: 599px) {
-      top: 39%;
+      // top: 39%;
     }
 
     &__text {
@@ -58,10 +30,10 @@
       }
 
       li {
-        max-width: 300px;
+        max-width: 210px;
 
         @media (max-width: 1024px) {
-          max-width: 242px;
+          max-width: 169px;
         }
 
         .circle {
@@ -93,11 +65,11 @@
       background: #a55ed1 url(./assets/images/button_background.png);
       border-radius: 25px;
       color: #fff;
-      font-size: 18px;
+      font-size: 13px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 300px;
+      width: 210px;
       height: 50px;
       margin: 79px auto;
     }
@@ -134,7 +106,7 @@
 
         li {
           text-align: center;
-          max-width: 301px;
+          max-width: 211px;
 
           .about-title {
             font-size: 1.6rem;

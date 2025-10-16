@@ -9,7 +9,7 @@
   "testsPort": 8889,
   "config": {
     "WP_DEBUG": true,
-    "IS_DEV": "0",
+    "IS_DEV": "1",
     "HMR_PORT": "3000",
     "HMR_ORIGIN": "http://localhost:3000"
   },
