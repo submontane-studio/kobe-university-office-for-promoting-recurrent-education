@@ -1,0 +1,46 @@
+{
+    "key": "group_frontpage_fields",
+    "title": "フロントページ設定",
+    "fields": [
+        {
+            "key": "field_frontpage_video_url",
+            "label": "動画URL",
+            "name": "frontpage_video_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "フロントページのKVセクションに表示する動画のURL（Vimeo等）を入力してください",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https://vimeo.com/...",
+            "maxlength": "",
+            "readonly": 0,
+            "disabled": 0,
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "page_type",
+                "operator": "==",
+                "value": "front_page"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "フロントページに表示する動画URL等の設定",
+    "show_in_rest": 0
+}

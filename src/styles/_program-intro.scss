@@ -1,0 +1,160 @@
+// プログラム紹介セクション
+.p-home__program-intro {
+  background-color: #fff;
+  padding: 60px 0;
+  max-width: 1200px;
+  margin: 115px auto 0;
+
+  @media (max-width: 767px) {
+    padding: 40px 20px;
+    margin-top: 60px;
+  }
+}
+
+.p-home__program-intro__header {
+  background-color: #f6f6f6;
+  text-align: center;
+  margin: -60px 0 0;
+  padding: 60px 40px 40px;
+  border-radius: 12px 12px 0 0;
+
+  @media (max-width: 767px) {
+    margin: -40px 0 0;
+    padding: 40px 20px 20px;
+  }
+}
+
+.p-home__program-intro__category {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.p-home__program-intro__title {
+  all: unset;
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #333;
+  text-align: center;
+  width: 100%;
+
+  @media (max-width: 767px) {
+    font-size: 24px;
+  }
+}
+
+.p-home__program-intro__content {
+  background-color: #f6f6f6;
+  margin: 0;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 45% 1fr;
+  gap: 40px;
+  align-items: start;
+  border-radius: 0 0 12px 12px;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 20px;
+  }
+}
+
+.p-home__program-intro__video {
+  position: relative;
+  background-color: #d0d0d0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  // Vimeo埋め込みの場合
+  .p-home__video__embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.p-home__program-intro__text {
+  min-width: 0;
+
+  p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    @media (max-width: 767px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.p-home__program-intro__categories {
+  margin: 60px 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin: 40px 0 0;
+  }
+}
+
+.p-home__program-intro__category-card {
+  background-color: #f6f6f6;
+  padding: 30px 25px;
+  border-radius: 8px;
+
+  @media (max-width: 767px) {
+    padding: 25px 20px;
+  }
+}
+
+.p-home__program-intro__category-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.p-home__program-intro__category-title {
+  all: unset;
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+
+  @media (max-width: 767px) {
+    font-size: 18px;
+  }
+}
+
+.p-home__program-intro__category-desc {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #666;
+
+  @media (max-width: 767px) {
+    font-size: 13px;
+  }
+}
