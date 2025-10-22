@@ -839,6 +839,135 @@ function validate_program_type_on_save($post_id) {
 add_action('save_post', 'validate_program_type_on_save');
 
 /**
+ * 応募開始日のYYYY/MM/DD形式バリデーション
+ */
+function validate_application_start_date($valid, $value, $field, $input_name) {
+	// 空の場合はスキップ
+	if (empty($value)) {
+		return $valid;
+	}
+
+	// YYYY/MM/DD形式の正規表現チェック
+	if (!preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $value)) {
+		$valid = '応募開始日は「YYYY/MM/DD」形式で入力してください（例: 2025/01/15）';
+		return $valid;
+	}
+
+	// 日付の妥当性チェック
+	$date_parts = explode('/', $value);
+	if (!checkdate((int)$date_parts[1], (int)$date_parts[2], (int)$date_parts[0])) {
+		$valid = '応募開始日に正しい日付を入力してください';
+		return $valid;
+	}
+
+	return $valid;
+}
+add_filter('acf/validate_value/name=application_start_date', 'validate_application_start_date', 10, 4);
+
+/**
+ * 応募終了日のYYYY/MM/DD形式バリデーション
+ */
+function validate_application_end_date($valid, $value, $field, $input_name) {
+	// 空の場合はスキップ
+	if (empty($value)) {
+		return $valid;
+	}
+
+	// YYYY/MM/DD形式の正規表現チェック
+	if (!preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $value)) {
+		$valid = '応募終了日は「YYYY/MM/DD」形式で入力してください（例: 2025/03/31）';
+		return $valid;
+	}
+
+	// 日付の妥当性チェック
+	$date_parts = explode('/', $value);
+	if (!checkdate((int)$date_parts[1], (int)$date_parts[2], (int)$date_parts[0])) {
+		$valid = '応募終了日に正しい日付を入力してください';
+		return $valid;
+	}
+
+	return $valid;
+}
+add_filter('acf/validate_value/name=application_end_date', 'validate_application_end_date', 10, 4);
+
+/**
+ * フロントページ動画URLのVimeo URLバリデーション
+ */
+function validate_frontpage_video_url($valid, $value, $field, $input_name) {
+	// 空の場合はスキップ
+	if (empty($value)) {
+		return $valid;
+	}
+
+	// Vimeo URLのパターンチェック
+	// 許可するパターン:
+	// - https://vimeo.com/123456789
+	// - https://player.vimeo.com/video/123456789
+	// - https://vimeo.com/channels/staffpicks/123456789
+	// - https://vimeo.com/groups/shortfilms/videos/123456789
+	$vimeo_pattern = '/^https?:\/\/(www\.)?(vimeo\.com|player\.vimeo\.com)\/.+/i';
+
+	if (!preg_match($vimeo_pattern, $value)) {
+		$valid = '動画URLはVimeoのURLを入力してください（例: https://vimeo.com/123456789）';
+		return $valid;
+	}
+
+	return $valid;
+}
+add_filter('acf/validate_value/name=frontpage_video_url', 'validate_frontpage_video_url', 10, 4);
+
+/**
+ * フロントページ動画埋め込みショートコード
+ * 使用方法: [frontpage_video]
+ */
+function frontpage_video_shortcode() {
+	// フロントページのIDを取得（通常は get_option('page_on_front') で取得）
+	$front_page_id = get_option('page_on_front');
+
+	// frontpage_video_url フィールドから動画URLを取得
+	$video_url = get_field('frontpage_video_url', $front_page_id);
+
+	// URLが空の場合は何も表示しない
+	if (empty($video_url)) {
+		return '';
+	}
+
+	// Vimeo動画IDを抽出
+	// 対応パターン:
+	// - https://vimeo.com/123456789
+	// - https://player.vimeo.com/video/123456789
+	// - https://vimeo.com/channels/staffpicks/123456789
+	$vimeo_id = '';
+	if (preg_match('/vimeo\.com\/(?:video\/|channels\/[^\/]+\/)?(\d+)/i', $video_url, $matches)) {
+		$vimeo_id = $matches[1];
+	} elseif (preg_match('/player\.vimeo\.com\/video\/(\d+)/i', $video_url, $matches)) {
+		$vimeo_id = $matches[1];
+	}
+
+	// IDが取得できなかった場合
+	if (empty($vimeo_id)) {
+		return '';
+	}
+
+	// Vimeo埋め込みiframeを生成（レスポンシブ対応）
+	$iframe_html = sprintf(
+		'<div class="p-home__video__embed" style="position: relative; padding-bottom: 56.25%%; height: 0; overflow: hidden;">
+			<iframe src="https://player.vimeo.com/video/%s?title=0&byline=0&portrait=0"
+				style="position: absolute; top: 0; left: 0; width: 100%%; height: 100%%;"
+				frameborder="0"
+				allow="autoplay; fullscreen; picture-in-picture"
+				allowfullscreen
+				loading="lazy">
+			</iframe>
+		</div>',
+		esc_attr($vimeo_id)
+	);
+
+	return $iframe_html;
+}
+add_shortcode('frontpage_video', 'frontpage_video_shortcode');
+
+/**
  * ニュースの追加読み込み用AJAX処理
  */
 function load_more_news() {
